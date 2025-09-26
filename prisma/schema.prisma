@@ -1,0 +1,45 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Machine {
+  id        String   @id @default(cuid())
+  name      String
+  type      MachineType
+  location  String?
+  status    MachineStatus @default(ACTIVE)
+  reservations Reservation[]
+}
+
+model Reservation {
+  id              String   @id @default(cuid())
+  machine         Machine  @relation(fields: [machineId], references: [id])
+  machineId       String
+  startTime       DateTime
+  endTime         DateTime
+  residentName    String
+  apartmentNumber String
+  status          ReservationStatus @default(ACTIVE)
+}
+
+enum MachineType {
+  WASHER
+  DRYER
+}
+
+enum MachineStatus {
+  ACTIVE
+  MAINTENANCE
+  OUT_OF_ORDER
+}
+
+enum ReservationStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
